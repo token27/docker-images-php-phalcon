@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+CAKEPHP_WEBSITE_FOLDER=/var/www/html
+
+if [ "$2" != "" ]; then
+  CAKEPHP_WEBSITE_FOLDER=$1
+fi
+
+# Create folder
+mkdir -p "${CAKEPHP_WEBSITE_FOLDER}"
+cd "${CAKEPHP_WEBSITE_FOLDER}"
+m -rf ./*
+
+# Install CakePHP
+composer create-project --prefer-dist cakephp/app . --no-interaction
+touch ./bin/cake
+chmod +x ./bin/cake
+ln -s ./bin/cake /usr/bin/cake
+
+# Install additional cakephp plugins
+composer require friendsofcake/search --no-interaction
+composer require curl/curl --no-interaction
+composer require josegonzalez/dotenv --no-interaction
+composer require phpunit/phpunit --no-interaction
+composer require phpstan/phpstan --no-interaction

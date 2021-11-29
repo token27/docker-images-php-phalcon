@@ -1,0 +1,64 @@
+#!/bin/sh
+set -e
+
+usage() {
+  echo "usage: $0 COMMAND"
+  echo
+  echo "Turns PHP into development mode."
+  echo "There's no option to revert it since this should only be executed for dev images or runtime debugging."
+  echo
+  echo "Commands:"
+  echo "   xdebug  downloads, installs and enable xdebug in the container"
+  echo "   config  adds standard development configuration for PHP"
+  echo
+}
+
+case "$1" in
+xdebug)
+  apkDel=
+  if [ -n "$PHPIZE_DEPS" ]; then
+    if apk info --installed .phpize-deps-configure >/dev/null; then
+      apkDel='.phpize-deps-configure'
+    elif ! apk info --installed .phpize-deps >/dev/null; then
+      # shellcheck disable=SC2086
+      apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS
+      apkDel='.phpize-deps'
+    fi
+  else
+    echo >&2 "\$PHPIZE_DEPS env variable is necessary to run this script"
+    exit 1
+  fi
+
+## From the environment variables replace the xdebug configuration placeholders
+  #  cp /usr/local/etc/php/conf.d/available/xdebug_template.ini /usr/local/etc/php/conf.d/available/xdebug_template.ini
+  touch /usr/local/etc/php/conf.d/zzz_xdebug.ini
+  rm /usr/local/etc/php/conf.d/zzz_xdebug.ini
+  ESCAPE='$' envsubst </usr/local/etc/php/conf.d/available/xdebug.conf.template >/usr/local/etc/php/conf.d/zzz_xdebug.ini
+
+  pecl install xdebug-stable || pecl install xdebug-2.9.8
+  docker-php-ext-enable xdebug
+  apk del $apkDel
+  ;;
+
+config)
+  if [ -f "${PHP_INI_DIR:?"The env variable PHP_INI_DIR must be set to run this script"}/php.ini-development" ]; then
+    # Override the configuration to symlink to the recommended development configuration
+    # ref: https://github.com/docker-library/docs/tree/master/php#configuration
+    ln -sf "$PHP_INI_DIR"/php.ini-development "$PHP_INI_DIR"/php.ini
+  else
+    echo >&2 "Could not configure php.ini, since the \"php.ini-development\" file does not exist"
+    exit 1
+  fi
+
+  ## From the environment variables replace the xdebug configuration placeholders
+  #  cp /usr/local/etc/php/conf.d/available/xdebug_template.ini /usr/local/etc/php/conf.d/available/xdebug_template.ini
+  touch /usr/local/etc/php/conf.d/zzz_xdebug.ini
+  rm /usr/local/etc/php/conf.d/zzz_xdebug.ini
+  ESCAPE='$' envsubst </usr/local/etc/php/conf.d/available/xdebug.conf.template >/usr/local/etc/php/conf.d/zzz_xdebug.ini
+  ;;
+
+*)
+  usage
+  exit 1
+  ;;
+esac

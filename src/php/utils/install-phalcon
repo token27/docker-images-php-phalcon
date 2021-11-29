@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+PHALCON_VERSION=3.4.5
+
+if [ "$1" != "" ]; then
+  PHALCON_VERSION=$1
+fi
+
+# Compile Phalcon
+set -xe &&
+  curl -LO https://github.com/phalcon/cphalcon/archive/v"${PHALCON_VERSION}".tar.gz &&
+  tar xzf "${PWD}"/v"${PHALCON_VERSION}".tar.gz &&
+  rm "${PWD}"/v"${PHALCON_VERSION}".tar.gz &&
+  cd cphalcon-"${PHALCON_VERSION}"/build &&
+  sh install
+
+# Remove all temp files
+cd ..
+cd ..
+rm -rf cphalcon-"${PHALCON_VERSION}"
+
+# Enable extension
+docker-php-ext-enable phalcon

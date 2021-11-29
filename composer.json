@@ -1,0 +1,35 @@
+{
+  "name": "token27/docker-images-php-phalcon",
+  "description": "An easy way to create and maintain PHP Phalcon Docker images.",
+  "license": "MIT",
+  "type": "project",
+  "keywords": [
+    "docker",
+    "php",
+    "phalcon",
+    "alpine"
+  ],
+  "homepage": "https://github.com/token27/docker-images-php-phalcon/",
+  "support": {
+    "issues": "https://github.com/token27/docker-images-php-phalcon/issues",
+    "wiki": "https://github.com/token27/docker-images-php-phalcon/wiki",
+    "source": "https://github.com/token27/docker-images-php-phalcon"
+  },
+  "authors": [
+    {
+      "name": "Token 27",
+      "homepage": "https://github.com/token27/",
+      "role": "Developer"
+    },
+    {
+      "name": "Token 27",
+      "homepage": "https://github.com/token27/",
+      "role": "Maintainer"
+    },
+    {
+      "name": "Contributors",
+      "homepage": "https://github.com/token27/docker-images-php-phalcon/graphs/contributors",
+      "role": "Contributor"
+    }
+  ]
+}

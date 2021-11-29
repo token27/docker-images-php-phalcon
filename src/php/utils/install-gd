@@ -1,0 +1,24 @@
+#!/bin/bash
+MAX_VERSION="7.2.35"
+PHP_VERSION=$(php -r 'echo PHP_VERSION;')
+
+function version_compare() {
+    COMPARE_OP=$1;
+    TEST_VERSION=$2;
+    RESULT=$(php -r 'echo version_compare(PHP_VERSION, "'"${TEST_VERSION}"'", "'"${COMPARE_OP}"'") ? "TRUE" : "";')
+
+    test -n "${RESULT}";
+}
+
+apk add --no-cache --upgrade imagemagick-dev freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev libzip-dev
+pecl install imagick
+pecl clear-cache
+
+echo "PHP VERSION: ${PHP_VERSION}"
+if (version_compare ">" "${MAX_VERSION}"); then
+  docker-php-ext-configure gd
+else
+  docker-php-ext-configure gd --enable-gd-native-ttf --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/ --with-webp-dir=/usr/include/
+fi
+docker-php-ext-install gd
+docker-php-ext-enable gd

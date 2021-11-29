@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+PHALCON_DEVTOOLS_VERSION=3.4.2
+
+if [ "$1" != "" ]; then
+  PHALCON_DEVTOOLS_VERSION=$1
+fi
+
+# Insall Phalcon Devtools
+# see https://github.com/phalcon/phalcon-devtools/
+curl -LO https://github.com/phalcon/phalcon-devtools/archive/v"${PHALCON_DEVTOOLS_VERSION}".tar.gz
+tar xzf "${PWD}"/v"${PHALCON_DEVTOOLS_VERSION}".tar.gz
+mv "${PWD}"/phalcon-devtools-"${PHALCON_DEVTOOLS_VERSION}" /usr/src/phalcon-devtools
+ln -sf /usr/src/phalcon-devtools/phalcon.php /usr/local/bin/phalcon
+# Remove all temp files
+rm -rf "${PWD}"/v"${PHALCON_DEVTOOLS_VERSION}".tar.gz

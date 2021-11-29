@@ -1,0 +1,27 @@
+#!/bin/bash
+MIN_VERSION="7.2.0"
+MAX_VERSION="7.3.0"
+EXTRA_VERSION="7.3.9"
+PHP_VERSION=$(php -r 'echo PHP_VERSION;')
+
+function version_compare() {
+    COMPARE_OP=$1;
+    TEST_VERSION=$2;
+    RESULT=$(php -r 'echo version_compare(PHP_VERSION, "'"${TEST_VERSION}"'", "'"${COMPARE_OP}"'") ? "TRUE" : "";')
+
+    test -n "${RESULT}";
+}
+
+echo "PHP VERSION: ${PHP_VERSION}"
+
+if (version_compare ">" "${MIN_VERSION}"); then
+  if (version_compare "<" "${MAX_VERSION}"); then
+#  if (version_compare ">" "${EXTRA_VERSION}"); then
+#fi
+    pecl install mcrypt
+#  else
+#    pecl install mcrypt-1.0.1
+  pecl clear-cache
+  docker-php-ext-enable mcrypt
+  fi
+fi
